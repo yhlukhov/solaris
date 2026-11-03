@@ -1,9 +1,16 @@
 'use client'
 
 import { Id } from '@/convex/_generated/dataModel'
+import { Allotment } from 'allotment'
 import { cn } from 'cn'
 import { useState } from 'react'
 import { FaGithub } from 'react-icons/fa'
+import { FileExplorer } from './file-explorer'
+
+const MIN_SIDEBAR_W = 200
+const MAX_SIDEBAR_W = 800
+const DEFAULT_SIDEBAR_W = 400
+const DEFAULT_MAIN_SIZE = 1000
 
 interface Props {
   id: Id<'projects'>
@@ -39,7 +46,19 @@ export function ProjectIdView({ id }: Props) {
             activeView === 'editor' ? 'visible' : 'invisible',
           )}
         >
-          <div>Code Editor</div>
+          <Allotment defaultSizes={[DEFAULT_SIDEBAR_W, DEFAULT_MAIN_SIZE]}>
+            <Allotment.Pane
+              snap
+              minSize={MIN_SIDEBAR_W}
+              maxSize={MAX_SIDEBAR_W}
+              preferredSize={DEFAULT_SIDEBAR_W}
+            >
+              <FileExplorer projectId={id} />
+            </Allotment.Pane>
+            <Allotment.Pane>
+              <div className='h-full bg-accent/30'>Code editor</div>
+            </Allotment.Pane>
+          </Allotment>
         </div>
         <div
           className={cn(

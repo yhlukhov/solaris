@@ -1,6 +1,6 @@
 import { v } from 'convex/values'
 import { query, mutation } from './_generated/server'
-import { verifyAuth } from './auth'
+import { verifyAuth, verifyProjectOwnership } from './utils'
 
 /* QUERIES */
 
@@ -37,12 +37,7 @@ export const getById = query({
   handler: async (ctx, { id }) => {
     const identity = await verifyAuth(ctx)
     const project = await ctx.db.get('projects', id)
-    if (!project) {
-      throw new Error('Project not found in database')
-    }
-    if (project.ownerId !== identity.subject) {
-      throw new Error('Unauthorized access to this project')
-    }
+    verifyProjectOwnership(project, identity)
     return project
   },
 })
@@ -72,15 +67,10 @@ export const rename = mutation({
   handler: async (ctx, { id, name }) => {
     const identity = await verifyAuth(ctx)
     const project = await ctx.db.get('projects', id)
-    if (!project) {
-      throw new Error('Project not found in database')
-    }
-    if (project.ownerId !== identity.subject) {
-      throw new Error('Unauthorized access to this project')
-    }
+    verifyProjectOwnership(project, identity)
     await ctx.db.patch('projects', id, {
       name,
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
     })
   },
 })

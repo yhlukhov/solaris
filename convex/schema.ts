@@ -1,27 +1,8 @@
-import {defineSchema, defineTable} from 'convex/server'
-import {v} from 'convex/values'
+import { defineSchema } from 'convex/server'
+import { projects } from './tables/projects'
+import { files } from './tables/files'
 
 export default defineSchema({
-  //* PROJECTS
-  projects: defineTable({
-    name: v.string(),
-    ownerId: v.string(),
-    updatedAt: v.number(),
-    importStatus: v.optional(
-      v.union(
-        v.literal('importing'),
-        v.literal('completed'),
-        v.literal('failed')
-      )
-    ),
-    exportStatus: v.optional(
-      v.union(
-        v.literal('exporting'),
-        v.literal('completed'),
-        v.literal('cancelled'),
-        v.literal('failed')
-      )
-    ),
-    exportRepoUrl: v.optional(v.string())
-  }).index('by_owner', ['ownerId'])
+  projects,
+  files,
 })
