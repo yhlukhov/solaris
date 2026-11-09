@@ -15,6 +15,7 @@ import {
 } from '../../hooks/useFiles'
 import { TreeItemWrapper } from './tree-item-wrapper'
 import { RenameInput } from './rename-input'
+import { useEditor } from '@/features/editor/hooks/use-editor'
 
 interface Props {
   item: Doc<'files'>
@@ -30,6 +31,7 @@ export const Tree = ({ item, projectId, level = 0 }: Props) => {
   const deleteFile = useDeleteFile()
   const renameFile = useRenameFile()
   const createFolder = useCreateFolder()
+  const { openFile, closeTab, activeTabId } = useEditor(projectId)
 
   const folderContents = useFolderContents({
     projectId,
@@ -62,6 +64,7 @@ export const Tree = ({ item, projectId, level = 0 }: Props) => {
 
   const handleRename = (newName: string) => {
     if (newName === item.name) {
+      setIsRenaming(false)
       return
     }
     renameFile({
@@ -72,6 +75,7 @@ export const Tree = ({ item, projectId, level = 0 }: Props) => {
   }
 
   if (item.type === 'file') {
+    const isActive = activeTabId === item._id
     if (isRenaming) {
       return (
         <RenameInput
@@ -88,15 +92,15 @@ export const Tree = ({ item, projectId, level = 0 }: Props) => {
       <TreeItemWrapper
         item={item}
         level={level}
-        isActive={false}
-        onClick={() => {}}
-        onDoubleClick={() => {}}
+        isActive={isActive}
+        onClick={() => openFile(item._id, { pinned: false })}
+        onDoubleClick={() => openFile(item._id, { pinned: true })}
         onRename={() => {
           setIsRenaming(true)
         }}
         onDelete={() => {
           deleteFile({ id: item._id })
-          // TODO: close tab
+          closeTab(item._id)
         }}
       >
         <FileIcon fileName={item.name} autoAssign className='size-4' />
@@ -184,7 +188,6 @@ export const Tree = ({ item, projectId, level = 0 }: Props) => {
           onRename={() => setIsRenaming(true)}
           onDelete={() => {
             deleteFile({ id: item._id })
-            // TODO: close tab
           }}
         >
           {folderRow}
