@@ -5,6 +5,7 @@ import {
   verifyProjectOwnership,
   compareFilesFn,
   deleteFileRecursive,
+  getFilePathRecursively,
 } from './utils'
 
 //* QUERIES:
@@ -37,6 +38,24 @@ export const getFile = query({
     const project = await ctx.db.get('projects', file.projectId)
     verifyProjectOwnership(project, identity)
     return file
+  },
+})
+
+export const getFilePath = query({
+  args: {
+    fileId: v.id('files'),
+  },
+  handler: async (ctx, { fileId }) => {
+    const identity = await verifyAuth(ctx)
+    const file = await ctx.db.get('files', fileId)
+    if (!file) {
+      throw new Error('File not found')
+    }
+    const project = await ctx.db.get('projects', file.projectId)
+    verifyProjectOwnership(project, identity)
+    const path = [] as { _id: string, name: string}[]
+    await getFilePathRecursively(file, path, ctx)
+    return path
   },
 })
 

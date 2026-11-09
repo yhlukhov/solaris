@@ -2,12 +2,20 @@ import { useMutation, useQuery } from 'convex/react'
 import { Id } from '@/convex/_generated/dataModel'
 import { api } from '@/convex/_generated/api'
 
-export function useFile(id: Id<'files'>) {
-  return useQuery(api.files.getFile, { id })
+export function useFile(id: Id<'files'> | null) {
+  return useQuery(api.files.getFile, id ? { id } : 'skip')
+}
+
+export function useFilePath(fileId: Id<'files'> | null) {
+  return useQuery(api.files.getFilePath, fileId ? { fileId } : 'skip')
 }
 
 export function useCreateFile() {
   return useMutation(api.files.createFile)
+}
+
+export function useUpdateFile() {
+  return useMutation(api.files.updateFile)
 }
 
 export function useRenameFile() {

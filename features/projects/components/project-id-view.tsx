@@ -6,6 +6,7 @@ import { cn } from 'cn'
 import { useState } from 'react'
 import { FaGithub } from 'react-icons/fa'
 import { FileExplorer } from './file-explorer'
+import { EditorView } from '@/features/editor/components/editor-view'
 
 const MIN_SIDEBAR_W = 200
 const MAX_SIDEBAR_W = 800
@@ -56,7 +57,9 @@ export function ProjectIdView({ id }: Props) {
               <FileExplorer projectId={id} />
             </Allotment.Pane>
             <Allotment.Pane>
-              <div className='h-full bg-accent/30'>Code editor</div>
+              <div className='h-full bg-accent/30'>
+                <EditorView projectId={id} />
+              </div>
             </Allotment.Pane>
           </Allotment>
         </div>

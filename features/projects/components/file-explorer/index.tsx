@@ -24,7 +24,7 @@ interface Props {
 }
 
 export const FileExplorer = ({ projectId }: Props) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const [collapseKey, setCollapseKey] = useState(0)
   const [creating, setCreating] = useState<'file' | 'folder' | null>(null)
   const project = useProject(projectId)

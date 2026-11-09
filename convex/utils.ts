@@ -1,5 +1,5 @@
 import { UserIdentity } from 'convex/server'
-import type { Doc } from './_generated/dataModel'
+import type { Doc, Id } from './_generated/dataModel'
 import { MutationCtx, QueryCtx } from './_generated/server'
 
 // Verify authentication status and return user identity
@@ -53,4 +53,19 @@ export async function deleteFileRecursive(
     await ctx.storage.delete(file.storageId)
   }
   await ctx.db.delete('files', file._id)
+}
+
+// Get file's parent recursively
+export async function getFilePathRecursively(
+  file: Doc<'files'>,
+  path: { _id: string; name: string }[],
+  ctx: QueryCtx,
+) {
+  path.unshift({ _id: file._id, name: file.name })
+  if (file.parentId) {
+    const parent = await ctx.db.get('files', file.parentId)
+    if (parent) {
+      await getFilePathRecursively(parent, path, ctx)
+    }
+  }
 }
